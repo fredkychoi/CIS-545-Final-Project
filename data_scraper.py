@@ -96,7 +96,7 @@ def race_scrape(race_date, loc):
         urls.append(url_full + url_race_end + str(i + 1))
 
     for i in range(len(num_races)):
-        print(urls[i])
+        # print(urls[i])
         driver.get(urls[i])
         driver.implicitly_wait(20)
 
@@ -108,22 +108,22 @@ def race_scrape(race_date, loc):
         if (verify(type_xpath)):
             temp_type = wait.until(EC.presence_of_element_located((By.XPATH, type_xpath)))
             type = (temp_type.text)
-            print(type)
+            # print(type)
 
         if (verify(going_xpath)):
             temp_going = wait.until(EC.presence_of_element_located((By.XPATH, going_xpath)))
             going = (temp_going.text)
-            print(going)
+            # print(going)
 
         if (verify(course_xpath)):
             temp_course = wait.until(EC.presence_of_element_located((By.XPATH, course_xpath)))
             course = (temp_course.text)
-            print(course)
+            # print(course)
         
         if (verify(purse_xpath)):
             temp_purse = wait.until(EC.presence_of_element_located((By.XPATH, purse_xpath)))
             purse = (temp_purse.text)
-            print(purse)
+            # print(purse)
 
         if (verify(table_xpath)):
             temp_table = wait.until(EC.presence_of_all_elements_located((By.XPATH, table_xpath)))
@@ -139,8 +139,11 @@ def race_scrape(race_date, loc):
                     
                     for k in range(12):
                         pd_new_row.append(table[start_index + k].text)
+                    
+                    url_array = temp_table[start_index + 2].find_elements(By.TAG_NAME, 'a')
+                    horse_url = url_array[0].get_attribute("href")
 
-                    print(pd_new_row)
+                    horse_scrape(horse_url, temp_table[start_index + 2].text)
 
     return
 
@@ -301,5 +304,3 @@ def horse_scrape(horse_url, horse_name):
 
 if __name__ == "__main__":
     race_scrape("2020/09/06", "ST")
-    horse_scrape("https://racing.hkjc.com/racing/information/English/Horse/Horse.aspx?HorseId=HK_2019_D108", "hello")
-    horse_scrape("https://racing.hkjc.com/racing/information/English/Horse/OtherHorse.aspx?HorseId=HK_2016_A098", "no")
