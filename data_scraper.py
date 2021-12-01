@@ -4,6 +4,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import csv
 
 # URLs for race data
 url_race_head = "https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate="
@@ -46,7 +48,9 @@ dam_sire_xpath = "//div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[7]/td[3]"
 dam_sire_retired_xpath = "//div[1]/table[1]/tbody/tr/td[3]/table/tbody/tr[5]/td[3]"
 
 # Setup web driver for automated data scraping
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome()
+driver = webdriver.Chrome(ChromeDriverManager(version="95.0.4638.69").install()) # Stacey's verson
+driver.get("https://www.google.com")
 driver.set_page_load_timeout(30)
 wait = WebDriverWait(driver, 10)
 
@@ -85,69 +89,92 @@ def race_scrape(race_date, loc):
     wait.until(EC.presence_of_element_located((By.XPATH, no_races_xpath)))
     num_races = driver.find_elements(By.XPATH, no_races_xpath)
     urls = []
-    race_df = pd.DataFrame({'Date': [], 'Loc.': [], 'Race No.': [], 'Type': [], 'Going': [], 
-        'Course': [], 'Purse': [], 'Place': [], 'No.': [], 'Horse': [], 'Jockey': [], 'Trainer': [], 
-        'Act. Wt.': [], 'Decl. Horse Wt.': [], 'Draw': [], 'LBW': [], 'Running Pos.': [], 
-        'Finish Time': [], 'Win Odds': []})
+    # race_df = pd.DataFrame({'Date': [], 'Loc.': [], 'Race No.': [], 'Type': [], 'Going': [], 
+    #     'Course': [], 'Purse': [], 'Place': [], 'No.': [], 'Horse': [], 'Jockey': [], 'Trainer': [], 
+    #     'Act. Wt.': [], 'Decl. Horse Wt.': [], 'Draw': [], 'LBW': [], 'Running Pos.': [], 
+    #     'Finish Time': [], 'Win Odds': []})
 
     print("    Found: " + str(len(num_races)) + " races")
-
     for i in range(len(num_races)):
         urls.append(url_full + url_race_end + str(i + 1))
-
-    for i in range(len(num_races)):
-        # print(urls[i])
-        driver.get(urls[i])
-        driver.implicitly_wait(20)
-
-        type = None
-        going = None
-        course = None
-        purse = None
-
-        if (verify(type_xpath)):
-            temp_type = wait.until(EC.presence_of_element_located((By.XPATH, type_xpath)))
-            type = (temp_type.text)
-            # print(type)
-
-        if (verify(going_xpath)):
-            temp_going = wait.until(EC.presence_of_element_located((By.XPATH, going_xpath)))
-            going = (temp_going.text)
-            # print(going)
-
-        if (verify(course_xpath)):
-            temp_course = wait.until(EC.presence_of_element_located((By.XPATH, course_xpath)))
-            course = (temp_course.text)
-            # print(course)
+    # name of csv file 
+    filename_race = "race_data.csv"
+    filename_horse = "horse_data.csv"
         
-        if (verify(purse_xpath)):
-            temp_purse = wait.until(EC.presence_of_element_located((By.XPATH, purse_xpath)))
-            purse = (temp_purse.text)
-            # print(purse)
-
-        if (verify(table_xpath)):
-            temp_table = wait.until(EC.presence_of_all_elements_located((By.XPATH, table_xpath)))
-            table = temp_table
-            num_elements = len(table)
+    # writing to csv file 
+    with open(filename_race, 'w') as race_file:
+        with open(filename_horse, 'w') as horse_file:
+            fieldnames_race = ['Date', 'Loc.', 'Race No.', 'Type', 'Going',
+            'Course', 'Purse', 'Place', 'No.', 'Horse', 'Jockey', 'Trainer', 
+            'Act. Wt.', 'Decl. Horse Wt.', 'Draw', 'LBW', 'Running Pos.', 
+            'Finish Time', 'Win Odds']
+            fieldnames_horse = ['horse_name', 'horse_url', 'country_of_origin', 
+            'age', 'color', 'sex', 'import_type', 'season_stakes', 'total_stakes', 
+            'no_123_starts', 'no_starts_in_10', 'stable_loc', 'trainer', 'owner', 
+            'current_rating', 'sos_rating', 'sire', 'dam', 'dam_sire', 'retired'] # TODO: header for horse data
             
-            if (num_elements % 12 == 0 and num_elements > 0):
-                num_horses = int(num_elements / 12)
+            writer_race = csv.writer(race_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer_horse = csv.writer(horse_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer_horse.writerow(fieldnames_horse)
+            writer_race.writerow(fieldnames_race)
+            
+            
 
-                for j in range(num_horses):
-                    driver.get(urls[i])
-                    driver.implicitly_wait(20)
+            for i in range(len(num_races)):
+                # print(urls[i])
+                driver.get(urls[i])
+                driver.implicitly_wait(20)
+
+                type = None
+                going = None
+                course = None
+                purse = None
+
+                if (verify(type_xpath)):
+                    temp_type = wait.until(EC.presence_of_element_located((By.XPATH, type_xpath)))
+                    type = (temp_type.text)
+                    # print(type)
+
+                if (verify(going_xpath)):
+                    temp_going = wait.until(EC.presence_of_element_located((By.XPATH, going_xpath)))
+                    going = (temp_going.text)
+                    # print(going)
+
+                if (verify(course_xpath)):
+                    temp_course = wait.until(EC.presence_of_element_located((By.XPATH, course_xpath)))
+                    course = (temp_course.text)
+                    # print(course)
+                
+                if (verify(purse_xpath)):
+                    temp_purse = wait.until(EC.presence_of_element_located((By.XPATH, purse_xpath)))
+                    purse = (temp_purse.text)
+                    # print(purse)
+
+                if (verify(table_xpath)):
                     temp_table = wait.until(EC.presence_of_all_elements_located((By.XPATH, table_xpath)))
                     table = temp_table
-                    start_index = j * 12
-                    pd_new_row = [race_date, loc, i + 1, type, going, course, purse] 
+                    num_elements = len(table)
                     
-                    for k in range(12):
-                        pd_new_row.append(table[start_index + k].text)
-                    
-                    url_array = temp_table[start_index + 2].find_elements(By.TAG_NAME, 'a')
-                    horse_url = url_array[0].get_attribute("href")
+                    if (num_elements % 12 == 0 and num_elements > 0):
+                        num_horses = int(num_elements / 12)
 
-                    horse_scrape(horse_url, temp_table[start_index + 2].text)
+                        for j in range(num_horses):
+                            driver.get(urls[i])
+                            driver.implicitly_wait(20)
+                            temp_table = wait.until(EC.presence_of_all_elements_located((By.XPATH, table_xpath)))
+                            table = temp_table
+                            start_index = j * 12
+                            pd_new_row = [race_date, loc, i + 1, type, going, course, purse] 
+                            
+                            for k in range(12):
+                                pd_new_row.append(table[start_index + k].text)
+                            writer_race.writerow(pd_new_row)
+                            
+                            url_array = temp_table[start_index + 2].find_elements(By.TAG_NAME, 'a')
+                            horse_url = url_array[0].get_attribute("href")
+
+                            horse_scrape(horse_url, temp_table[start_index + 2].text, writer_horse)
+                            
 
     return
 
@@ -158,7 +185,7 @@ entry does not exist in the dataframe.
 @param horse_url: URL of the horse's webpage
 @param horse_name: Name of the horse for string comparison with horse_df entries.
 '''
-def horse_scrape(horse_url, horse_name):
+def horse_scrape(horse_url, horse_name, writer_horse):
     if (horse_name in horse_df['Name']):
         print("We have it already!")
         return
@@ -303,7 +330,7 @@ def horse_scrape(horse_url, horse_name):
 
         pd_new_row = [horse_name, horse_url, country_of_origin, age, color, sex, import_type, season_stakes, total_stakes, 
             no_123_starts, no_starts_in_10, stable_loc, trainer, owner, current_rating, sos_rating, sire, dam, dam_sire, retired]
-
+        writer_horse.writerow(pd_new_row)
         print(pd_new_row)
 
 if __name__ == "__main__":

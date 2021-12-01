@@ -1,0 +1,5 @@
+horse_name,horse_url,country_of_origin,age,color,sex,import_type,season_stakes,total_stakes,no_123_starts,no_starts_in_10,stable_loc,trainer,owner,current_rating,sos_rating,sire,dam,dam_sire,retired
+JOY MASTER(B222),https://racing.hkjc.com/racing/information/English/Horse/Horse.aspx?HorseId=HK_2017_B222,AUS,7,Bay,Gelding,PP,"$124,800","$2,590,670",4-1-3-45,2,"Hong Kong
+(06/05/2021)",D E Ferraris,"Fong Chi Keung, Chan Chu Woon & Tam Kin Sang",40,44,Rogano,Irish Hut,Quest For Fame,False
+ART OF RAW(V368),https://racing.hkjc.com/racing/information/English/Horse/Horse.aspx?HorseId=HK_2015_V368,FR,-1,Bay,Gelding,PP,,"$1,264,425",1-3-1-38,-1,,,Mr & Mrs Chan Chi Kong,23,-1,Myboycharlie,Tehamana,Pleasantly Perfect,True
+THE FULL BLOOM(V243),https://racing.hkjc.com/racing/information/English/Horse/Horse.aspx?HorseId=HK_2015_V243,GB,-1,,,PP,,"$3,760,725",6-1-5-76,-1,,,Gary Lee Sai Ho,20,-1,Zebedee,Break Of Dawn,Mt Livermore,True
