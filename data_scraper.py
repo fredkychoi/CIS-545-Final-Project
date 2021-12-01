@@ -134,6 +134,10 @@ def race_scrape(race_date, loc):
                 num_horses = int(num_elements / 12)
 
                 for j in range(num_horses):
+                    driver.get(urls[i])
+                    driver.implicitly_wait(20)
+                    temp_table = wait.until(EC.presence_of_all_elements_located((By.XPATH, table_xpath)))
+                    table = temp_table
                     start_index = j * 12
                     pd_new_row = [race_date, loc, i + 1, type, going, course, purse] 
                     
@@ -189,7 +193,7 @@ def horse_scrape(horse_url, horse_name):
         else:
             return
 
-        if '(Retired)' in retrieve_name:
+        if '(Retired)' in retrieve_name or '(Deregistered)' in retrieve_name:
             retired = True
 
         if (verify(country_of_origin_age_xpath)):
