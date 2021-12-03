@@ -186,6 +186,7 @@ entry does not exist in the dataframe.
 @param horse_name: Name of the horse for string comparison with horse_df entries.
 '''
 def horse_scrape(horse_url, horse_name, writer_horse):
+    # TODO: actually add it to horsedf
     if (horse_name in horse_df['Name']):
         print("We have it already!")
         return
@@ -334,4 +335,8 @@ def horse_scrape(horse_url, horse_name, writer_horse):
         print(pd_new_row)
 
 if __name__ == "__main__":
-    race_scrape("2020/09/06", "ST")
+    with open('dates.csv', 'r') as dates:
+        csv_reader = csv.reader(dates)
+        # Iterate over each row in the csv using reader object
+        for row in csv_reader:
+            race_scrape(row[0], row[1])
